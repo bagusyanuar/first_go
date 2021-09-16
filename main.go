@@ -19,13 +19,12 @@ func main() {
 	}
 
 	dbUrl := os.Getenv("DB_URL")
-	fmt.Println(dbUrl)
 	database.DATABASE, err = gorm.Open(mysql.Open(dbUrl))
 
 	if err != nil {
 		panic("Failed To Connect Database")
 	}
-	database.DoMigration()
+	database.Migrate()
 
 	fmt.Println("woke")
 }

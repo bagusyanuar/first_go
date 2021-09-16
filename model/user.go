@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID      `gorm:"type:char(36);primaryKey" json:"id"`
+	ID        uuid.UUID      `gorm:"type:char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;primaryKey;" json:"id"`
 	Email     string         `gorm:"type:varchar(255);not null" json:"email"`
 	Password  *string        `gorm:"type:text" json:"password"`
 	Roles     datatypes.JSON `gorm:"type:longtext;not null" json:"roles"`
@@ -18,11 +18,11 @@ type User struct {
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 }
 
-func (u *User) BeforCreate(tx *gorm.DB) (err error)  {
+func (u *User) BeforCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New()
 	return
 }
 
-func (User) TableName() string  {
+func (User) TableName() string {
 	return "users"
 }

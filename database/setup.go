@@ -41,6 +41,5 @@ func Url(config *dbConfig) string {
 
 func DoMigration()  {
 	DATABASE.AutoMigrate(&model.User{})
-	DATABASE.AutoMigrate(&model.MigrationMember{})
 	DATABASE.AutoMigrate(&model.MigrationTeacher{})
 }
