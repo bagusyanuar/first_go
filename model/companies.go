@@ -8,7 +8,7 @@ import (
 )
 
 type Companies struct {
-	ID           uuid.UUID `gorm:"type:char(36);primaryKey;" json:"id"`
+	ID           uuid.UUID `gorm:"type:char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;primaryKey;" json:"id"`
 	UserID       uuid.UUID `gorm:"column:user_id;type:char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;not null" json:"user_id"`
 	Name         string    `gorm:"type:varchar(255);not null" json:"name"`
 	Slug         string    `gorm:"type:varchar(255);not null" json:"slug"`
