@@ -2,7 +2,7 @@ package main
 
 import (
 	"first_go/database"
-	"fmt"
+	"first_go/routes"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -26,5 +26,6 @@ func main() {
 	}
 	database.Migrate()
 
-	fmt.Println("woke")
+	server := routes.InitializeRoutes()
+	server.Run(":8000")
 }

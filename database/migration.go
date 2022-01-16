@@ -1,6 +1,6 @@
 package database
 
-import "first_go/model"
+import "first_go/src/model"
 
 type MemberRelation struct {
 	model.Member
@@ -11,6 +11,11 @@ type CompaniesRelation struct {
 	model.Companies
 	User       model.User       `gorm:"foreignKey:UserID"`
 	Industrial model.Industrial `gorm:"foreignKey:IndustrialID"`
+}
+
+type AdminRelation struct {
+	model.Admin
+	User model.User `gorm:"foreignKey:UserID"`
 }
 
 type JobsRelation struct {
@@ -31,5 +36,6 @@ func Migrate() {
 
 	DATABASE.AutoMigrate(&MemberRelation{})
 	DATABASE.AutoMigrate(&CompaniesRelation{})
+	DATABASE.AutoMigrate(&AdminRelation{})
 	DATABASE.AutoMigrate(&JobsRelation{})
 }

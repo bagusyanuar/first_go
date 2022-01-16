@@ -1,7 +1,7 @@
 package database
 
 import (
-	"first_go/model"
+	"first_go/src/model"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -39,7 +39,7 @@ func Url(config *dbConfig) string {
 	)
 }
 
-func DoMigration()  {
+func DoMigration() {
 	DATABASE.AutoMigrate(&model.User{})
 	DATABASE.AutoMigrate(&model.MigrationTeacher{})
 }
