@@ -30,7 +30,14 @@ func (User) TableName() string {
 	return "users"
 }
 
+//associate with admin profile
 type UserAdmin struct {
 	User
 	Admin Admin `gorm:"foreignKey:UserID" json:"admin"`
+}
+
+//associate with member profile
+type UserMember struct {
+	User
+	Member Member `gorm:"foreignkey:UserID" json:"member"`
 }

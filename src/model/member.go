@@ -14,7 +14,7 @@ type Member struct {
 	Phone       string     `gorm:"type:varchar(16);not null;" json:"phone"`
 	Avatar      string     `gorm:"type:text;not null;" json:"avatar"`
 	Address     string     `gorm:"type:text;not null;" json:"address"`
-	Gender      uint8      `gorm:"type:smallint;not null;comment:0 Perempuan 1 Laki-Laki;default:0" json:"gender"`
+	Gender      uint8      `gorm:"type:smallint;not null;comment:0 Not Set 1 Laki-Laki 2 Perempuan;default:0" json:"gender"`
 	DateOfBirth *time.Time `gorm:"type:date;" json:"date_of_birth"`
 	CreatedAt   time.Time  `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt   time.Time  `gorm:"column:updated_at;not null" json:"updated_at"`
@@ -25,8 +25,10 @@ type MigrationMember struct {
 	User User `gorm:"foreignKey:UserID"`
 }
 
-func (m *Member) BeforCreate(tx *gorm.DB) (err error) {
-	m.ID = uuid.New()
+func (member *Member) BeforeCreate(tx *gorm.DB) (err error) {
+	member.ID = uuid.New()
+	member.CreatedAt = time.Now()
+	member.UpdatedAt = time.Now()
 	return
 }
 

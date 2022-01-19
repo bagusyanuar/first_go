@@ -16,6 +16,7 @@ func GetUsers(c *gin.Context) {
 		username := c.PostForm("username")
 		password := c.PostForm("password")
 		email := c.PostForm("email")
+		name := c.PostForm("name")
 		roles, _ := json.Marshal([]string{"ROLE_MEMBER"})
 		provider, _ := json.Marshal([]string{"app"})
 
@@ -32,12 +33,21 @@ func GetUsers(c *gin.Context) {
 			Provider: provider,
 		}
 
-		if err := database.DATABASE.Create(&user).Error; err != nil {
+		member := model.Member{
+			Name: name,
+		}
+
+		userMember := model.UserMember{
+			User:   user,
+			Member: member,
+		}
+
+		if err := database.DATABASE.Create(&userMember).Error; err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"status": "OK",
-			"data":   user,
+			"data":   userMember,
 		})
 		return
 	}
