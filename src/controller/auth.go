@@ -5,6 +5,7 @@ import (
 	"first_go/database"
 	"first_go/src/lib"
 	"first_go/src/model"
+	"first_go/src/repository"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -150,8 +151,30 @@ func MemberSignUp(c *gin.Context) {
 }
 
 func MemberSignIn(c *gin.Context) {
-	// email := c.PostForm("email")
-	// password := c.PostForm("password")
-	// role := "member"
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	provider := c.PostForm("provider")
+	user, err := repository.SignInMember(&model.UserMember{}, email, password, provider)
+	if err != nil {
+		errResponse := lib.SignInReturnErrors(err)
+		c.JSON(errResponse["code"].(int), errResponse)
+		return
+	}
 
+	accessToken, errTokenize := lib.GenerateToken(user.ID, user.Member.ID, user.Username, user.Email, "member")
+	if errTokenize != nil {
+		c.JSON(http.StatusInternalServerError, lib.BaseJsonResponse{
+			Code:    http.StatusInternalServerError,
+			Data:    nil,
+			Message: "Error While Getting Access Token " + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, lib.BaseJsonResponse{
+		Code: http.StatusOK,
+		Data: map[string]interface{}{
+			"accessToken": accessToken,
+		},
+		Message: "Success Sign In",
+	})
 }

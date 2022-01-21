@@ -19,7 +19,7 @@ func UserRoutes(route *gin.RouterGroup) {
 		member := authGroup.Group("/member")
 		{
 			member.POST("/sign-up", controller.MemberSignUp)
-			member.POST("/sign-in", controller.MemberSignUp)
+			member.POST("/sign-in", controller.MemberSignIn)
 		}
 	}
 }
