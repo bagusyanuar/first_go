@@ -13,6 +13,7 @@ func InitializeRoutes() *gin.Engine {
 	apiV1 := route.Group("/api/v1")
 	{
 		v1.UserRoutes(apiV1)
+		v1.V1SubjectRoutes(apiV1)
 	}
 	route.POST("/test", controller.SuperAdminSeeder)
 	return route

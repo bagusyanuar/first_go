@@ -20,8 +20,10 @@ type MigrationAdmin struct {
 	User User `gorm:"foreignKey:UserID"`
 }
 
-func (a *Admin) BeforCreate(tx *gorm.DB) (err error) {
+func (a *Admin) BeforeCreate(tx *gorm.DB) (err error) {
 	a.ID = uuid.New()
+	a.CreatedAt = time.Now()
+	a.UpdatedAt = time.Now()
 	return
 }
 

@@ -41,3 +41,9 @@ type UserMember struct {
 	User
 	Member Member `gorm:"foreignkey:UserID" json:"member"`
 }
+
+//associate with mentor profile
+type UserMentor struct {
+	User
+	Mentor Mentor `gorm:"foreignkey:UserID" json:"mentor"`
+}
