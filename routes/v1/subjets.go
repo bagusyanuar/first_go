@@ -10,5 +10,7 @@ func V1SubjectRoutes(route *gin.RouterGroup) {
 	subjectGroup := route.Group("/subjects")
 	{
 		subjectGroup.GET("/", subjects.GetSubjects)
+		subjectGroup.POST("/", subjects.GetSubjects)
+		subjectGroup.GET("/:slug", subjects.GetSubjectBySlug)
 	}
 }

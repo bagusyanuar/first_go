@@ -11,3 +11,11 @@ func FindSubjects(subject *[]model.Subject, param string) (s *[]model.Subject, e
 	}
 	return subject, nil
 }
+
+func FindSubjectBySlug(subject *model.Subject, slug string) (data *model.Subject, err error) {
+	if err = database.DATABASE.Debug().Where("slug = ?", slug).First(&subject).Error; err != nil {
+		return nil, err
+	}
+
+	return subject, nil
+}
