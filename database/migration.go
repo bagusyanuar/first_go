@@ -41,6 +41,7 @@ func Migrate() {
 	DATABASE.AutoMigrate(&model.Profession{})
 	DATABASE.AutoMigrate(&model.Subject{})
 	DATABASE.Exec("ALTER TABLE `subjects` CHANGE `icon` `icon` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL")
+	DATABASE.Exec("ALTER TABLE `subjects` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;")
 
 	DATABASE.AutoMigrate(&MemberRelation{})
 	DATABASE.AutoMigrate(&MentorRelation{})
