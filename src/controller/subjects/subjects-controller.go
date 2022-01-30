@@ -1,15 +1,16 @@
 package subjects
 
 import (
+	"first_go/database"
 	"first_go/src/lib"
 	"first_go/src/model"
 	"first_go/src/repository"
-	"fmt"
 	"mime/multipart"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type request_body struct {
@@ -22,56 +23,40 @@ func GetSubjects(c *gin.Context) {
 	if c.Request.Method == "POST" {
 		var request request_body
 		c.Bind(&request)
-		
-		v := validator.New()
-		err_validator := v.Struct(request)
-		// for _, e := range err_validator.(validator.ValidationErrors) {
-		// 	fmt.Println(e)
-		// }
-		if err_validator != nil {
-			errs := err_validator.(validator.ValidationErrors)
-			fmt.Println("err")
-			for _, e := range errs {
-				// can translate each error one at a time.
-				fmt.Println(e)
+		var icon_name *string
+		if request.Icon != nil {
+			ext := filepath.Ext(request.Icon.Filename)
+			filename := "assets/icons/" + uuid.New().String() + ext
+			icon_name = &filename
+			if err_upload := c.SaveUploadedFile(request.Icon, filename); err_upload != nil {
+				c.JSON(http.StatusInternalServerError, lib.BaseJsonResponse{
+					Code:    http.StatusInternalServerError,
+					Data:    nil,
+					Message: "Internal Server Error. Failed while upload icon",
+				})
+				return
 			}
-
 		}
+
+		subject := model.Subject{
+			Name: request.Name,
+			Slug: lib.MakeSlug(request.Name),
+			Icon: icon_name,
+		}
+
+		if err_insert := database.DATABASE.Debug().Create(&subject).Error; err_insert != nil {
+			c.JSON(http.StatusInternalServerError, lib.BaseJsonResponse{
+				Code:    http.StatusInternalServerError,
+				Data:    nil,
+				Message: "Internal Server Error. Failed while Create New subject",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, lib.BaseJsonResponse{
+			Code: http.StatusOK,
+			Data: subject,
+		})
 		return
-		// var icon_name *string
-		// if request.Icon != nil {
-		// 	ext := filepath.Ext(request.Icon.Filename)
-		// 	filename := "assets/icons/" + uuid.New().String() + ext
-		// 	icon_name = &filename
-		// 	if err_upload := c.SaveUploadedFile(request.Icon, filename); err_upload != nil {
-		// 		c.JSON(http.StatusInternalServerError, lib.BaseJsonResponse{
-		// 			Code:    http.StatusInternalServerError,
-		// 			Data:    nil,
-		// 			Message: "Internal Server Error. Failed while upload icon",
-		// 		})
-		// 		return
-		// 	}
-		// }
-
-		// subject := model.Subject{
-		// 	Name: request.Name,
-		// 	Slug: lib.MakeSlug(request.Name),
-		// 	Icon: icon_name,
-		// }
-
-		// if err_insert := database.DATABASE.Debug().Create(&subject).Error; err_insert != nil {
-		// 	c.JSON(http.StatusInternalServerError, lib.BaseJsonResponse{
-		// 		Code:    http.StatusInternalServerError,
-		// 		Data:    nil,
-		// 		Message: "Internal Server Error. Failed while Create New subject",
-		// 	})
-		// 	return
-		// }
-		// c.JSON(http.StatusOK, lib.BaseJsonResponse{
-		// 	Code: http.StatusOK,
-		// 	Data: subject,
-		// })
-		// return
 	}
 	var subjects []model.Subject
 

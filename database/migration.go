@@ -29,6 +29,12 @@ type JobsRelation struct {
 	Profession model.Profession `gorm:"foreignKey:ProfessionID"`
 }
 
+type MentorSubjectRelation struct {
+	model.MentorSubject
+	Mentor  model.Mentor  `gorm:"foreignKey:MentorID"`
+	Subject model.Subject `gorm:"foreignKey:SubjectID"`
+}
+
 func Migrate() {
 	DATABASE.AutoMigrate(&model.User{})
 	DATABASE.AutoMigrate(&model.Member{})
@@ -42,10 +48,12 @@ func Migrate() {
 	DATABASE.AutoMigrate(&model.Subject{})
 	DATABASE.Exec("ALTER TABLE `subjects` CHANGE `icon` `icon` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL")
 	DATABASE.Exec("ALTER TABLE `subjects` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;")
+	DATABASE.AutoMigrate(&model.MentorSubject{})
 
 	DATABASE.AutoMigrate(&MemberRelation{})
 	DATABASE.AutoMigrate(&MentorRelation{})
 	DATABASE.AutoMigrate(&AdminRelation{})
 	DATABASE.AutoMigrate(&CompaniesRelation{})
 	DATABASE.AutoMigrate(&JobsRelation{})
+	DATABASE.AutoMigrate(&MentorSubjectRelation{})
 }
