@@ -33,3 +33,34 @@ func GenerateToken(unique uuid.UUID, identifier uuid.UUID, username string, emai
 	}
 	return signedToken, nil
 }
+
+func ClaimToken(auth string) (interface{}, error) {
+	if auth == "" {
+		return nil, ErrorNoAuthorization
+	}
+	bearer := string(auth[0:7])
+	token := string(auth[7:])
+
+	if bearer != "Bearer " {
+		return nil, ErrorBearerType
+	}
+
+	vToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if method, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrorSignInMethod
+		} else if method != JWTSigninMethod {
+			return nil, ErrorSignInMethod
+		}
+		return []byte(JWTSignatureKey), nil
+	})
+
+	if err != nil {
+		return nil, ErrorJWTParse
+	}
+
+	claim, ok := vToken.Claims.(jwt.MapClaims)
+	if !ok || !vToken.Valid {
+		return nil, ErrorJWTClaims
+	}
+	return claim, nil
+}

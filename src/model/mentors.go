@@ -30,3 +30,8 @@ func (mentor *Mentor) BeforeCreate(tx *gorm.DB) (err error) {
 func (Mentor) TableName() string {
 	return "mentors"
 }
+
+type MentorAccount struct {
+	Mentor
+	User User `gorm:"foreignKey:UserID" json:"account"`
+}
