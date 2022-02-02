@@ -4,7 +4,7 @@ import (
 	"errors"
 	"first_go/database"
 	"first_go/src/lib"
-	"first_go/src/model"
+	"first_go/src/response"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -14,17 +14,17 @@ import (
 
 func GetMentorProfile(c *gin.Context) {
 	user := c.MustGet("user").(jwt.MapClaims)
-
-	var mentor model.MentorAccount
+	var mentor response.MentorProfileResponse
 	err := database.DATABASE.Debug().
 		Preload("User", func(tx *gorm.DB) *gorm.DB {
-			return tx.Select("id", "email", "roles", "provider")
+			return tx.Select("id", "email", "username")
 		}).
+		Preload("Skills.Subject").
 		Joins("JOIN users ON users.id = mentors.user_id").
 		Where("mentors.id = ?", user["identifier"]).
 		First(&mentor).Error
 	if err != nil {
-		eMsg := "Internal Server Error"
+		eMsg := "Internal Server Error " + err.Error()
 		sMsg := http.StatusInternalServerError
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			eMsg = "User Not Found!"
@@ -33,7 +33,7 @@ func GetMentorProfile(c *gin.Context) {
 		c.AbortWithStatusJSON(sMsg, lib.BaseJsonResponse{
 			Code:    sMsg,
 			Data:    nil,
-			Message: "Failed To Load Mentor Profile " + eMsg,
+			Message: eMsg,
 		})
 		return
 	}
