@@ -15,6 +15,8 @@ func MentorRoutes(route *gin.RouterGroup) {
 		meGroup := mentorGroup.Group("/me")
 		{
 			meGroup.GET("/", middleware.Auth, users.GetMentorProfile)
+			meGroup.GET("/subjects", middleware.Auth, users.MentorSubjects)
+			meGroup.POST("/subjects", middleware.Auth, users.MentorSubjects)
 		}
 	}
 }

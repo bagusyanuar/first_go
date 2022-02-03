@@ -13,3 +13,8 @@ type MentorProfileResponse struct {
 	User   PreloadUser                     `gorm:"foreignKey:UserID" json:"account"`
 	Skills []*PreloadMentorSubjectWSubject `gorm:"foreignKey:MentorID" json:"skills"`
 }
+
+type MentorSubjectResponse struct {
+	model.Mentor
+	Subjects []*PreloadMentorSubjectWSubject `gorm:"foreignKey:MentorID" json:"subjects"`
+}

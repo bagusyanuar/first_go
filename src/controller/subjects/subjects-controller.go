@@ -10,19 +10,37 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type request_body struct {
-	Name string                `form:"name" validate:"required,email"`
+	Name string                `form:"name" validate:"required"`
 	Icon *multipart.FileHeader `form:"icon"`
 }
 
-func GetSubjects(c *gin.Context) {
+func Subjects(c *gin.Context) {
 
 	if c.Request.Method == "POST" {
 		var request request_body
 		c.Bind(&request)
+		
+		
+		validate := validator.New()
+		err_validation := validate.Struct(request)
+		if err_validation != nil {
+			errs := err_validation.(validator.ValidationErrors)
+			var ar_err []string
+			for _, e := range errs {
+				ar_err = append(ar_err, e.Tag())
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, lib.BaseJsonResponse{
+				Code: http.StatusBadRequest,
+				Data: ar_err,
+				Message: "Bad Request Validation Form Data",
+			})
+			return
+		}
 		var icon_name *string
 		if request.Icon != nil {
 			ext := filepath.Ext(request.Icon.Filename)
@@ -55,6 +73,7 @@ func GetSubjects(c *gin.Context) {
 		c.JSON(http.StatusOK, lib.BaseJsonResponse{
 			Code: http.StatusOK,
 			Data: subject,
+			Message: "success create new subject",
 		})
 		return
 	}

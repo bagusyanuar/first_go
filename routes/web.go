@@ -14,6 +14,7 @@ func InitializeRoutes() *gin.Engine {
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("assets"))))
 	apiV1 := route.Group("/api/v1")
 	{
+		v1.AuthRoutes(apiV1)
 		v1.UserRoutes(apiV1)
 		v1.MentorRoutes(apiV1)
 		v1.V1SubjectRoutes(apiV1)
