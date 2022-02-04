@@ -18,6 +18,7 @@ func InitializeRoutes() *gin.Engine {
 		v1.UserRoutes(apiV1)
 		v1.MentorRoutes(apiV1)
 		v1.V1SubjectRoutes(apiV1)
+		v1.V1GradeRoutes(apiV1)
 	}
 	route.POST("/test", controller.SuperAdminSeeder)
 	return route

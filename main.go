@@ -3,6 +3,8 @@ package main
 import (
 	"first_go/database"
 	"first_go/routes"
+	"flag"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -24,7 +26,17 @@ func main() {
 	if err != nil {
 		panic("Failed To Connect Database")
 	}
-	database.Migrate()
+
+	migrate := flag.String("m", "", "Unsupport Command")
+	flag.Parse()
+	command := *migrate
+
+	if command == "migrate" {
+		database.Migrate()
+		fmt.Printf("Successfull Migrate")
+		return
+	}
+	
 
 	server := routes.InitializeRoutes()
 	server.Run(":8000")
