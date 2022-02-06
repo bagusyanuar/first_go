@@ -35,8 +35,11 @@ func main() {
 		database.Migrate()
 		fmt.Printf("Successfull Migrate")
 		return
+	} else if command == "seed" {
+		database.Seeders()
+		fmt.Println("Successfull Seed")
+		return
 	}
-	
 
 	server := routes.InitializeRoutes()
 	server.Run(":8000")
