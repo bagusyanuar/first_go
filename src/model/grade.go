@@ -24,3 +24,13 @@ func (grade *Grade) BeforeCreate(tx *gorm.DB) (err error) {
 func (Grade) TableName() string {
 	return "grades"
 }
+
+type GradeSimple struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Name      string    `gorm:"type:varchar(255);not null" json:"name"`
+	Slug      string    `gorm:"type:varchar(255);not null" json:"slug"`
+}
+
+func (GradeSimple) TableName() string {
+	return "grades"
+}

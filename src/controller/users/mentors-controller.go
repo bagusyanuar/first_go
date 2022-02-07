@@ -112,7 +112,7 @@ func MentorSubjects(c *gin.Context)  {
 		return
 	}
 	
-	var data []response.PreloadMentorSubjectWSubject
+	var data []response.PreloadMentorSubjectAll
 	err := database.DATABASE.Debug().
 		Preload("Subject").
 		Where("mentor_id = ?", user["identifier"]).

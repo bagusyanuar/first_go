@@ -10,6 +10,7 @@ import (
 func MentorSubjectRoutes(route *gin.RouterGroup) {
 	skillGroup := route.Group("/mentor-subject")
 	{
-		skillGroup.POST("/", middleware.Auth, mentor_subject.CreateMentorSubject)
+		skillGroup.GET("/", mentor_subject.CreateMentorSubject)
+		skillGroup.POST("/", middleware.Auth, middleware.Mentor, mentor_subject.CreateMentorSubject)
 	}
 }

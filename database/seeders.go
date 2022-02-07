@@ -13,6 +13,7 @@ func Seeders() {
 	adminSeeder()
 	mentorSeeder()
 	subjectSeeder()
+	gradesSeeder()
 }
 
 func adminSeeder() {
@@ -172,8 +173,55 @@ func subjectSeeder() {
 
 		if err := tx.Create(&subject).Error; err != nil {
 			tx.Rollback()
-			panic("Failed To Create Seeders")
+			panic("Failed To Create Seeders Subject")
 		}
 	}
+	tx.Commit()
+	println("succes seed subject")
+}
+
+
+var grades = []struct {
+	Name string
+}{
+	{
+		Name: "PAUD",
+	},
+	{
+		Name: "SD",
+	},
+	{
+		Name: "SMP",
+	},
+	{
+		Name: "SMA",
+	},
+	{
+		Name: "UMUM",
+	},
+	{
+		Name: "SBMPTN",
+	},
+}
+
+func gradesSeeder() {
+	tx := DATABASE.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	for _, v := range grades {
+		grade := model.Grade{
+			Name: v.Name,
+			Slug: lib.MakeSlug(v.Name),
+		}
+
+		if err := tx.Create(&grade).Error; err != nil {
+			tx.Rollback()
+			panic("Failed To Create Seeders Grades")
+		}
+	}
+	println("succes seed grade")
 	tx.Commit()
 }

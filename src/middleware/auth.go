@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,5 +22,31 @@ func Auth(c *gin.Context) {
 		})
 	}
 	c.Set("user", claim)
+	c.Next()
+}
+
+func Mentor(c *gin.Context)  {
+	user := c.MustGet("user").(jwt.MapClaims)
+	if user["roles"] != "mentor" {
+		c.AbortWithStatusJSON(http.StatusForbidden, lib.BaseJsonResponse{
+			Code:    http.StatusForbidden,
+			Data:    nil,
+			Message: "Forbidden Access",
+		})
+		return
+	}
+	c.Next()
+}
+
+func Member(c *gin.Context)  {
+	user := c.MustGet("user").(jwt.MapClaims)
+	if user["roles"] != "member" {
+		c.AbortWithStatusJSON(http.StatusForbidden, lib.BaseJsonResponse{
+			Code:    http.StatusForbidden,
+			Data:    nil,
+			Message: "Forbidden Access",
+		})
+		return
+	}
 	c.Next()
 }

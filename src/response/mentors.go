@@ -11,10 +11,10 @@ import (
 type MentorProfileResponse struct {
 	model.Mentor
 	User   PreloadUser                     `gorm:"foreignKey:UserID" json:"account"`
-	Skills []*PreloadMentorSubjectWSubject `gorm:"foreignKey:MentorID" json:"skills"`
+	Skills []*PreloadMentorSubjectAll `gorm:"foreignKey:MentorID" json:"skills"`
 }
 
 type MentorSubjectResponse struct {
 	model.Mentor
-	Subjects []*PreloadMentorSubjectWSubject `gorm:"foreignKey:MentorID" json:"subjects"`
+	Subjects []*PreloadMentorSubjectAll `gorm:"foreignKey:MentorID" json:"subjects"`
 }

@@ -24,3 +24,14 @@ func (subject *Subject) BeforeCreate(tx *gorm.DB) (err error) {
 func (Subject) TableName() string {
 	return "subjects"
 }
+
+type SubjectSimple struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Name      string    `gorm:"type:varchar(255);not null" json:"name"`
+	Slug      string    `gorm:"type:varchar(255);not null" json:"slug"`
+	Icon      *string   `gorm:"type:text;" json:"icon"`
+}
+
+func (SubjectSimple) TableName() string {
+	return "subjects"
+}
