@@ -20,6 +20,22 @@ type MentorSubjectRequest struct {
 	Method    datatypes.JSON `json:"method"`
 }
 
+type response struct {
+	model.MentorSubject
+	Mentor struct {
+		ID     uuid.UUID `json:"id"`
+		UserID uuid.UUID `json:"user_id"`
+		Name   string    `json:"name"`
+	} `gorm:"foreignKey:MentorID" json:"mentor"`
+	Subject *struct {
+		ID   uint    `json:"id"`
+		Name string  `json:"name"`
+		Slug string  `json:"slug"`
+		Icon *string `json:"icon"`
+	} `gorm:"foreignKey:SubjectID" json:"subject"`
+	Grade *model.GradeSimple `gorm:"foreignKey:GradeID" json:"grade"`
+}
+
 func CreateMentorSubject(c *gin.Context) {
 	if c.Request.Method == "POST" {
 		user := c.MustGet("user").(jwt.MapClaims)
@@ -86,16 +102,16 @@ func CreateMentorSubject(c *gin.Context) {
 	}
 	subject_id := c.Query("subject")
 	grade_id := c.Query("grade")
-	type response struct {
-		model.MentorSubject
-		Mentor  model.Mentor         `gorm:"foreignKey:MentorID" json:"mentor"`
-		Subject *model.SubjectSimple `gorm:"foreignKey:SubjectID" json:"subject"`
-		Grade   *model.GradeSimple   `gorm:"foreignKey:GradeID" json:"grade"`
-	}
+	method_id := c.Query("method")
+
 	var data []response
 	query := database.DATABASE.Debug().
-		Preload("Mentor").Joins("JOIN mentors ON mentors.id = mentor_subject.mentor_id").
-		Preload("Subject").
+		Preload("Mentor", func(tx *gorm.DB) *gorm.DB {
+			return tx.Table("mentors")
+		}).Joins("JOIN mentors ON mentors.id = mentor_subject.mentor_id").
+		Preload("Subject", func(tx *gorm.DB) *gorm.DB {
+			return tx.Table("subjects")
+		}).
 		Preload("Grade")
 
 	if subject_id != "" {
@@ -105,12 +121,16 @@ func CreateMentorSubject(c *gin.Context) {
 	if grade_id != "" {
 		query.Where("grade_id = ?", grade_id)
 	}
+
+	if method_id != "" {
+		query.Where("JSON_CONTAINS(method, " + method_id + ", '$')")
+	}
 	err := query.Find(&data).Error
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, lib.BaseJsonResponse{
 			Code:    http.StatusInternalServerError,
 			Data:    nil,
-			Message: "Failed To Fetch Data",
+			Message: "Failed To Fetch Data " + err.Error(),
 		})
 		return
 	}
