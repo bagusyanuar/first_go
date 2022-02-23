@@ -23,17 +23,20 @@ type MentorSubjectRequest struct {
 type response struct {
 	model.MentorSubject
 	Mentor struct {
-		ID     uuid.UUID `json:"id"`
-		UserID uuid.UUID `json:"user_id"`
-		Name   string    `json:"name"`
+		ID      uuid.UUID  `json:"id"`
+		UserID  uuid.UUID  `json:"user_id"`
+		Name    string     `json:"name"`
+		Phone   string     `json:"phone"`
+		Avatar  lib.Avatar `json:"avatar"`
+		Address string     `json:"address"`
 	} `gorm:"foreignKey:MentorID" json:"mentor"`
-	Subject *struct {
+	Subject struct {
 		ID   uint    `json:"id"`
 		Name string  `json:"name"`
 		Slug string  `json:"slug"`
 		Icon *string `json:"icon"`
 	} `gorm:"foreignKey:SubjectID" json:"subject"`
-	Grade *model.GradeSimple `gorm:"foreignKey:GradeID" json:"grade"`
+	Grade model.GradeSimple `gorm:"foreignKey:GradeID" json:"grade"`
 }
 
 func CreateMentorSubject(c *gin.Context) {

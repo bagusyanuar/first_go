@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -16,26 +17,26 @@ type BaseJsonResponse struct {
 	Message string      `json:"msg"`
 }
 
-func SuccessJsonResponse(c *gin.Context, data interface{})  {
+func SuccessJsonResponse(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, BaseJsonResponse{
-		Code: http.StatusOK,
-		Data: data,
+		Code:    http.StatusOK,
+		Data:    data,
 		Message: "success",
 	})
 }
 
-func ErrorJsonResponse(c *gin.Context, msg string)  {
+func ErrorJsonResponse(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusInternalServerError, BaseJsonResponse{
-		Code: http.StatusInternalServerError,
-		Data: nil,
-		Message: "Internal Server Error (" +msg+ ")",
+		Code:    http.StatusInternalServerError,
+		Data:    nil,
+		Message: "Internal Server Error (" + msg + ")",
 	})
 }
 
-func BadRequestJsonResponse(c *gin.Context)  {
+func BadRequestJsonResponse(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusBadRequest, BaseJsonResponse{
-		Code: http.StatusBadRequest,
-		Data: nil,
+		Code:    http.StatusBadRequest,
+		Data:    nil,
 		Message: "Bad Request Validation Form Data",
 	})
 }
@@ -44,7 +45,7 @@ func IsPasswordValid(plainPassword string, hashedPassword string) bool {
 	return err == nil
 }
 
-func MakeSlug(text string) string  {
+func MakeSlug(text string) string {
 	str := []byte(strings.ToLower(text))
 
 	regE := regexp.MustCompile("[[:space:]]")
@@ -56,17 +57,34 @@ func MakeSlug(text string) string  {
 	return string(str)
 }
 
-func ValidateRequest(s interface{})  (res []string, e error){
+func ValidateRequest(s interface{}) (res []string, e error) {
 	validate := validator.New()
 	err := validate.Struct(s)
 	var errs []string
 	if err != nil {
 		e_validate := err.(validator.ValidationErrors)
-		
+
 		for _, e := range e_validate {
 			errs = append(errs, e.Tag())
 		}
 		return errs, err
 	}
 	return errs, nil
+}
+
+type Avatar string
+
+func (a *Avatar) Scan(value interface{}) error {
+	var result string
+	switch v := value.(type) {
+	case []byte:
+		if string(v) == "" {
+			result = "-"
+		} else {
+			result = "http://localhost:8002/" + string(v)
+		}
+	}
+	
+	*a = Avatar(fmt.Sprintf("%v", result))
+	return nil
 }
